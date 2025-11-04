@@ -1,0 +1,575 @@
+{
+	"info": {
+		"_postman_id": "financial-api-2024",
+		"name": "Financial Prediction API - Complete Collection",
+		"description": "Complete API collection with authentication, 2FA, CSRF protection, and all endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Access token received\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('access_token');",
+									"    pm.environment.set(\"access_token\", jsonData.access_token);",
+									"    pm.environment.set(\"refresh_token\", jsonData.refresh_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{test_email}}\",\n    \"password\": \"{{test_password}}\",\n    \"full_name\": \"Test User\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "register"]
+						},
+						"description": "Register a new user account"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Tokens received\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('access_token');",
+									"    pm.environment.set(\"access_token\", jsonData.access_token);",
+									"    pm.environment.set(\"refresh_token\", jsonData.refresh_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{test_email}}\",\n    \"password\": \"{{test_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "login"]
+						},
+						"description": "Login with email and password"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"New access token received\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"access_token\", jsonData.access_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/refresh?refresh_token={{refresh_token}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "refresh"],
+							"query": [
+								{
+									"key": "refresh_token",
+									"value": "{{refresh_token}}"
+								}
+							]
+						},
+						"description": "Refresh access token using refresh token"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/me",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "me"]
+						},
+						"description": "Get current user information (requires authentication)"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/logout",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "logout"]
+						},
+						"description": "Logout and revoke access token"
+					},
+					"response": []
+				}
+			],
+			"description": "User authentication endpoints"
+		},
+		{
+			"name": "Two-Factor Authentication (2FA)",
+			"item": [
+				{
+					"name": "Enable 2FA",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"2FA enabled\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('secret');",
+									"    pm.expect(jsonData).to.have.property('qr_code');",
+									"    pm.expect(jsonData).to.have.property('backup_codes');",
+									"    pm.environment.set(\"two_factor_secret\", jsonData.secret);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/2fa/enable",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "2fa", "enable"]
+						},
+						"description": "Enable 2FA and receive QR code + backup codes"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify 2FA Setup",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"secret\": \"{{two_factor_secret}}\",\n    \"token\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/2fa/verify",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "2fa", "verify"]
+						},
+						"description": "Verify 2FA setup with first TOTP token"
+					},
+					"response": []
+				},
+				{
+					"name": "Login with 2FA",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{test_email}}\",\n    \"password\": \"{{test_password}}\",\n    \"totp_token\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/login/2fa",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "login", "2fa"]
+						},
+						"description": "Login with email, password, and TOTP token"
+					},
+					"response": []
+				},
+				{
+					"name": "Disable 2FA",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"totp_token\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/2fa/disable",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "2fa", "disable"]
+						},
+						"description": "Disable 2FA (requires current TOTP token)"
+					},
+					"response": []
+				},
+				{
+					"name": "Login with Backup Code",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{test_email}}\",\n    \"password\": \"{{test_password}}\",\n    \"backup_code\": \"1234-5678\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/2fa/backup-code",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "2fa", "backup-code"]
+						},
+						"description": "Emergency login with backup code"
+					},
+					"response": []
+				}
+			],
+			"description": "Two-Factor Authentication endpoints"
+		},
+		{
+			"name": "Security",
+			"item": [
+				{
+					"name": "Get CSRF Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"CSRF token received\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('csrf_token');",
+									"    pm.environment.set(\"csrf_token\", jsonData.csrf_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/csrf-token",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "csrf-token"]
+						},
+						"description": "Get CSRF token for protected operations"
+					},
+					"response": []
+				}
+			],
+			"description": "Security-related endpoints"
+		},
+		{
+			"name": "Portfolio",
+			"item": [
+				{
+					"name": "Buy Asset",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-Token",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"asset_id\": \"BTC\",\n    \"quantity\": 0.1,\n    \"price\": 50000\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/portfolio/buy",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "portfolio", "buy"]
+						},
+						"description": "Buy asset (requires CSRF token)"
+					},
+					"response": []
+				},
+				{
+					"name": "Sell Asset",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-Token",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"asset_id\": \"BTC\",\n    \"quantity\": 0.05,\n    \"price\": 51000\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/portfolio/sell",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "portfolio", "sell"]
+						},
+						"description": "Sell asset (requires CSRF token)"
+					},
+					"response": []
+				}
+			],
+			"description": "Portfolio management (CSRF protected)"
+		},
+		{
+			"name": "Predictions",
+			"item": [
+				{
+					"name": "Predict Stock",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"symbol\": \"AAPL\",\n    \"days\": 7\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/predictions/stock",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "predictions", "stock"]
+						},
+						"description": "Get stock price prediction"
+					},
+					"response": []
+				},
+				{
+					"name": "Predict Crypto",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"symbol\": \"BTC\",\n    \"days\": 7\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/predictions/crypto",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "predictions", "crypto"]
+						},
+						"description": "Get cryptocurrency prediction"
+					},
+					"response": []
+				}
+			],
+			"description": "AI-powered predictions"
+		},
+		{
+			"name": "Prices",
+			"item": [
+				{
+					"name": "Get Stock Price",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/prices/stock/AAPL",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "prices", "stock", "AAPL"]
+						},
+						"description": "Get current stock price"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Crypto Price",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/prices/crypto/BTC",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "prices", "crypto", "BTC"]
+						},
+						"description": "Get current cryptocurrency price"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Gold Price",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/prices/metals/gold",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "prices", "metals", "gold"]
+						},
+						"description": "Get current gold price"
+					},
+					"response": []
+				}
+			],
+			"description": "Real-time price data"
+		},
+		{
+			"name": "News",
+			"item": [
+				{
+					"name": "Get Latest News",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/news?limit=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "news"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Get latest financial news"
+					},
+					"response": []
+				}
+			],
+			"description": "Financial news aggregation"
+		},
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "Health",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/health",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "health"]
+						},
+						"description": "Check API health status"
+					},
+					"response": []
+				}
+			],
+			"description": "System health monitoring"
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000",
+			"type": "string"
+		},
+		{
+			"key": "test_email",
+			"value": "test@example.com",
+			"type": "string"
+		},
+		{
+			"key": "test_password",
+			"value": "SecurePass123!",
+			"type": "string"
+		}
+	]
+}
