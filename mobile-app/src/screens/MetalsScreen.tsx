@@ -357,11 +357,12 @@ const styles = StyleSheet.create({
   },
   confidenceChip: {
     backgroundColor: '#533483',
-    height: 26,
+    height: 28,
   },
   confidenceText: {
     color: '#fff',
-    fontSize: 11,
+    fontSize: 10,
+    fontWeight: '600',
   },
   sentimentChip: {
     height: 26,
@@ -387,27 +388,36 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 3,
+    paddingVertical: 4,
+    minHeight: 36,
   },
   predictionKey: {
     fontSize: 13,
     color: '#aaa',
+    flex: 0.35,
   },
   predictionValue: {
     fontSize: 13,
     fontWeight: 'bold',
     color: '#fff',
+    flex: 0.65,
+    textAlign: 'right',
   },
   rangeValue: {
     fontSize: 12,
     color: '#aaa',
     fontStyle: 'italic',
+    flex: 0.65,
+    textAlign: 'right',
   },
   changeContainer: {
-    flexDirection: 'row',
+    flex: 0.65,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
   },
   changeDirectionChip: {
-    height: 24,
+    height: 32,
+    minWidth: 90,
   },
   positiveText: {
     color: '#4caf50',
@@ -426,7 +436,7 @@ const styles = StyleSheet.create({
   },
   directionText: {
     color: '#fff',
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: 'bold',
   },
   infoCard: {

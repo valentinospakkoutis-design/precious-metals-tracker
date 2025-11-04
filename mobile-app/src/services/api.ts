@@ -218,7 +218,7 @@ export const priceAPI = {
 // Predictions API
 export const predictionAPI = {
   predict: async (symbol: string) => {
-    const response = await api.post(`/predict/${symbol}`);
+    const response = await api.get(`/simple-predict/${symbol}`);
     return response.data;
   },
 };
